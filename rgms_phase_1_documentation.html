@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RGMS Phase 1 Specification - MFU Research Grant Management System</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f4f9',
+              100: '#e1e9f3',
+              200: '#c3d3e7',
+              300: '#94b3d5',
+              400: '#5e8ec0',
+              500: '#396fa8',
+              600: '#28558c',
+              700: '#214472',
+              800: '#1d3a5e',
+              900: '#1b324f',
+              950: '#0f1d30',
+            },
+            mfu: {
+              red: '#8B0000',
+              gold: '#C5A059',
+              dark: '#111827'
+            }
+          },
+          fontFamily: {
+            sans: ['"IBM Plex Sans Thai"', '"Prompt"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'IBM Plex Sans Thai', 'Prompt', sans-serif;
+    }
+    
+    /* Print Styles */
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      .print-only {
+        display: block !important;
+      }
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+      }
+      main {
+        margin-left: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+      }
+      .page-break {
+        page-break-before: always;
+      }
+      .card-print {
+        border: 1px solid #d1d5db !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+      }
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #334155;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+  <!-- Navigation Sidebar -->
+  <aside id="sidebar" class="no-print fixed top-0 left-0 z-40 w-72 h-screen transition-transform -translate-x-full md:translate-x-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between">
+    <div class="h-full flex flex-col">
+      <!-- Sidebar Header / Branding -->
+      <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-lg bg-brand-800 dark:bg-brand-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+            R
+          </div>
+          <div>
+            <h1 class="font-bold text-slate-900 dark:text-white text-sm leading-tight">RGMS Docs</h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">มฟล. MVP Phase 1</p>
+          </div>
+        </div>
+        <button id="sidebar-close" class="md:hidden text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Quick Search Bar -->
+      <div class="p-4 border-b border-slate-100 dark:border-slate-800/60">
+        <div class="relative">
+          <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <input type="text" id="doc-search" placeholder="ค้นหาข้อกำหนด, หัวข้อ..." class="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-lg border border-transparent focus:border-brand-500 focus:outline-none focus:bg-white dark:focus:bg-slate-900 transition-all">
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="flex-1 overflow-y-auto p-4 space-y-1 text-sm font-medium">
+        <a href="#hero" class="nav-link group flex items-center px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-brand-700 dark:hover:text-brand-400 transition-colors">
+          <svg class="w-4 h-4 mr-3 text-slate-400 group-hover:text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+          <span>ภาพรวมระบบ (Overview)</span>
+        </a>
+        <a href="#scope" class="nav-link group flex items-center px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-brand-700 dark:hover:text-brand-400 transition-colors">
+          <svg class="w-4 h-4 mr-3 text-slate-400 group-hover:text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          <span>1. ขอบเขตโครงการ (Scope)</span>
+        </a>
+        <a href="#roles" class="nav-link group flex items-center px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-brand-700 dark:hover:text-brand-400 transition-colors">
+          <svg class="w-4 h-4 mr-3 text-slate-400 group-hover:text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          <span>2. ขั้นตอนแยกตามบทบาท</span>
+        </a>
+        <a href="#requirements" class="nav-link group flex items-center px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-brand-700 dark:hover:text-brand-400 transition-colors">
+          <svg class="w-4 h-4 mr-3 text-slate-400 group-hover:text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span>3. ฟังก์ชันหลัก (FRs)</span>
+        </a>
+        <a href="#business-rules" class="nav-link group flex items-center px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-brand-700 dark:hover:text-brand-400 transition-colors">
+          <svg class="w-4 h-4 mr-3 text-slate-400 group-hover:text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          <span>4. กฎทางธุรกิจ (Business Rules)</span>
+        </a>
+        <a href="#state-machine" class="nav-link group flex items-center px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-brand-700 dark:hover:text-brand-400 transition-colors">
+          <svg class="w-4 h-4 mr-3 text-slate-400 group-hover:text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span>5. State Machine Flow</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar Footer Tools -->
+      <div class="p-4 border-t border-slate-200 dark:border-slate-800 space-y-2">
+        <button id="theme-toggle" class="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+          <span class="flex items-center">
+            <svg class="w-4 h-4 mr-2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+            <span id="theme-text">Dark Mode</span>
+          </span>
+          <span class="text-xxs px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 font-mono">Toggle</span>
+        </button>
+        <button onclick="window.print()" class="w-full flex items-center justify-center px-3 py-2 text-xs font-medium text-white bg-slate-800 dark:bg-brand-700 rounded-lg hover:bg-slate-900 dark:hover:bg-brand-600 transition-colors shadow-sm">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+          พิมพ์เอกสาร / Export PDF
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile Overlay & Topbar -->
+  <div class="no-print md:hidden fixed top-0 left-0 right-0 z-30 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <button id="sidebar-open" class="text-slate-600 dark:text-slate-300">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <span class="font-bold text-sm text-slate-900 dark:text-white">RGMS Specification</span>
+    </div>
+    <span class="text-xs px-2 py-0.5 rounded-full bg-brand-100 text-brand-800 dark:bg-brand-900 dark:text-brand-200 font-semibold">MVP Phase 1</span>
+  </div>
+
+  <!-- Main Content Container -->
+  <main class="md:ml-72 p-4 md:p-8 lg:p-12 max-w-7xl mx-auto pt-16 md:pt-8 transition-all">
+    
+    <!-- HERO SECTION -->
+    <section id="hero" class="mb-12">
+      <!-- Breadcrumb -->
+      <div class="flex items-center space-x-2 text-xs font-medium text-slate-500 dark:text-slate-400 mb-3">
+        <span>มหาวิทยาลัยแม่ฟ้าหลวง</span>
+        <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <span>ส่วนบริหารการวิจัย</span>
+        <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <span class="text-slate-900 dark:text-white font-semibold">ข้อกำหนดระบบ RGMS</span>
+      </div>
+
+      <!-- Main Title Card -->
+      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-brand-950 text-white p-6 md:p-10 shadow-xl border border-slate-800">
+        <div class="relative z-10 max-w-3xl">
+          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700 text-xs text-brand-300 font-mono mb-4">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>SYSTEM SPECIFICATION & WORKFLOW SPEC</span>
+          </div>
+          <h1 class="text-2xl md:text-4xl font-bold tracking-tight mb-3 text-white">
+            ระบบบริหารจัดการทุนวิจัย มฟล. (RGMS)
+          </h1>
+          <p class="text-slate-300 text-sm md:text-base leading-relaxed font-light mb-6">
+            สรุปข้อกำหนดความต้องการและขั้นตอนการทำงานกระบวนการต้นน้ำ (Upstream Operations) สำหรับระบบบริหารจัดการทุนวิจัย มหาลัยแม่ฟ้าหลวง ระยะ MVP Phase 1
+          </p>
+
+          <!-- Executive Badge Pills -->
+          <div class="flex flex-wrap gap-2 text-xs font-medium">
+            <span class="px-3 py-1.5 rounded-lg bg-slate-800/90 text-slate-200 border border-slate-700">
+              สถานะ: <strong class="text-emerald-400 font-semibold">ต้นน้ำ (Upstream)</strong>
+            </span>
+            <span class="px-3 py-1.5 rounded-lg bg-slate-800/90 text-slate-200 border border-slate-700">
+              ขอบเขต: <strong class="text-brand-300 font-semibold">สมัคร ถึง ประกาศผล</strong>
+            </span>
+            <span class="px-3 py-1.5 rounded-lg bg-slate-800/90 text-slate-200 border border-slate-700">
+              โครงสร้าง: <strong class="text-amber-300 font-semibold">2-Track Parallel Review</strong>
+            </span>
+          </div>
+        </div>
+
+        <!-- Decorative background subtle grid -->
+        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none"></div>
+      </div>
+
+      <!-- Summary KPI Bar -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">งบประมาณสนับสนุน</div>
+          <div class="text-lg font-bold text-slate-900 dark:text-white">Per-Tier Model</div>
+          <div class="text-xs text-brand-600 dark:text-brand-400 mt-1 font-mono">100k / 200k / 300k</div>
+        </div>
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">เพดานงบย่อย</div>
+          <div class="text-lg font-bold text-amber-600 dark:text-amber-400">25% Cap Rule</div>
+          <div class="text-xs text-slate-500 mt-1">หมวดเดินทาง/ครุภัณฑ์</div>
+        </div>
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">รูปแบบการตรวจ</div>
+          <div class="text-lg font-bold text-indigo-600 dark:text-indigo-400">Comment-Based</div>
+          <div class="text-xs text-slate-500 mt-1">ตัด Rubric 100 คะแนน</div>
+        </div>
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">ความปลอดภัยฟิลด์</div>
+          <div class="text-lg font-bold text-emerald-600 dark:text-emerald-400">Field Locking</div>
+          <div class="text-xs text-slate-500 mt-1">ล็อก Read-Only ส่วนที่ผ่าน</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 1: PROJECT SCOPE -->
+    <section id="scope" class="mb-14 scroll-mt-6">
+      <div class="flex items-center space-x-3 mb-6 pb-2 border-b border-slate-200 dark:border-slate-800">
+        <div class="w-8 h-8 rounded-lg bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300 flex items-center justify-center font-bold text-sm">
+          01
+        </div>
+        <h2 class="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">ขอบเขตโครงการ (Project Scope)</h2>
+      </div>
+
+      <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
+        ระบบบริหารจัดการทุนวิจัย มฟล. (RGMS) ในระยะ <strong>MVP เฟส 1</strong> มุ่งเน้นกระบวนการต้นน้ำตั้งแต่ 
+        <span class="underline decoration-brand-500 font-semibold text-slate-800 dark:text-slate-100">“การเปิดรับสมัคร จนถึงการออกประกาศผลจัดสรรทุน”</span> 
+        เพื่อรองรับขั้นตอนการคัดเลือกและอนุมัติทุนวิจัยอย่างรวดเร็วและเป็นระบบ
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- In-Scope Card -->
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-emerald-200 dark:border-emerald-900/40 p-6 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 left-0 right-0 h-1 bg-emerald-500"></div>
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-lg text-emerald-800 dark:text-emerald-400 flex items-center">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              In-Scope (ขอบเขตใน MVP Phase 1)
+            </h3>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+              รวมในระบบ
+            </span>
+          </div>
+
+          <ul class="space-y-3 text-xs md:text-sm text-slate-600 dark:text-slate-300">
+            <li class="flex items-start">
+              <svg class="w-4 h-4 text-emerald-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span><strong>การจัดการรอบทุน:</strong> ประกาศเปิด/ปิดรับสมัครตามกรอบเวลา</span>
+            </li>
+            <li class="flex items-start">
+              <svg class="w-4 h-4 text-emerald-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span><strong>โปรไฟล์นักวิจัย & นำเข้าไฟล์:</strong> กรอกประวัติ RS-01 ส่วน ข และสกัดข้อความอัตโนมัติจาก <code>.docx</code></span>
+            </li>
+            <li class="flex items-start">
+              <svg class="w-4 h-4 text-emerald-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span><strong>ตรวจสอบงบประมาณ:</strong> ตรวจเกณฑ์ Per-Tier และเตือนเพดานย่อย 25% (เดินทาง/ครุภัณฑ์)</span>
+            </li>
+            <li class="flex items-start">
+              <svg class="w-4 h-4 text-emerald-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span><strong>School Endorsement:</strong> การตรวจและรับรองระดับสำนักวิชาโดยประธานวิจัย/คณบดี</span>
+            </li>
+            <li class="flex items-start">
+              <svg class="w-4 h-4 text-emerald-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span><strong>2-Track Parallel Review:</strong> แยกการประเมินแทร็กเนื้อหา (อนุกรรมการ) และแทร็กการเงิน (เจ้าหน้าที่ Claim งาน)</span>
+            </li>
+            <li class="flex items-start">
+              <svg class="w-4 h-4 text-emerald-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span><strong>Field-Level Locking & Auto-Routing:</strong> ล็อกฟิลด์ส่วนที่ผ่านแล้ว และส่งเฉพาะแทร็กที่ไม่ผ่านซ้ำ</span>
+            </li>
+            <li class="flex items-start">
+              <svg class="w-4 h-4 text-emerald-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span><strong>สรุปมติ & ประกาศผล:</strong> บันทึกมติ คกก.ส่งเสริมฯ และสร้างร่างเอกสารส่งลงนาม e-Office</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Out-of-Scope Card -->
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 left-0 right-0 h-1 bg-slate-400 dark:bg-slate-700"></div>
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-lg text-slate-700 dark:text-slate-300 flex items-center">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+              Out-of-Scope (ยกไปทำในเฟสถัดไป)
+            </h3>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+              ถัดไป (Phase 2+)
+            </span>
+          </div>
+
+          <ul class="space-y-3 text-xs md:text-sm text-slate-500 dark:text-slate-400">
+            <li class="flex items-start">
+              <svg class="w-4 h-4 text-slate-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+              <span><strong>ทำสัญญารับทุน:</strong> การออกสัญญาและลงนามรับทุนออนไลน์</span>
+            </li>
+            <li class="flex items-start">
+              <svg class="w-4 h-4 text-slate-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+              <span><strong>การเบิกจ่ายเงินงวด:</strong> กระบวนการเบิกจ่ายเงินตามงวด 50% / 40% / 10%</span>
+            </li>
+            <li class="flex items-start">
+              <svg class="w-4 h-4 text-slate-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+              <span><strong>ติดตามรายงาน:</strong> การส่งรายงานความก้าวหน้า (Progress Report) และรายงานฉบับสมบูรณ์</span>
+            </li>
+            <li class="flex items-start">
+              <svg class="w-4 h-4 text-slate-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+              <span><strong>การตรวจเอกสารการเงินปลายน้ำ:</strong> แบบฟอร์ม วจ.1 ถึง วจ.9</span>
+            </li>
+            <li class="flex items-start">
+              <svg class="w-4 h-4 text-slate-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+              <span><strong>การเปลี่ยนแปลงสัญญา:</strong> คำขอขยายเวลา / คำขอปรับเปลี่ยนรายละเอียดงบประมาณระหว่างดำเนินโครงการ</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: ROLE-BASED WORKFLOW -->
+    <section id="roles" class="mb-14 scroll-mt-6">
+      <div class="flex items-center space-x-3 mb-6 pb-2 border-b border-slate-200 dark:border-slate-800">
+        <div class="w-8 h-8 rounded-lg bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300 flex items-center justify-center font-bold text-sm">
+          02
+        </div>
+        <h2 class="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">ขั้นตอนการทำงานแยกตามบทบาท (Role-Based Workflow)</h2>
+      </div>
+
+      <!-- Role Selector Tabs -->
+      <div class="no-print flex space-x-2 overflow-x-auto pb-3 mb-6 scrollbar-none" id="role-tab-container">
+        <button onclick="filterRole('all')" class="role-tab active px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap bg-brand-800 text-white dark:bg-brand-600">
+          ทุกบทบาท (All Roles)
+        </button>
+        <button onclick="filterRole('pi')" class="role-tab px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100">
+          นักวิจัย (PI)
+        </button>
+        <button onclick="filterRole('dean')" class="role-tab px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100">
+          ประธานวิจัย / คณบดี
+        </button>
+        <button onclick="filterRole('sec')" class="role-tab px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100">
+          เลขาสำนักวิชา
+        </button>
+        <button onclick="filterRole('ops')" class="role-tab px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100">
+          เจ้าหน้าที่ส่วนวิจัย (Ops)
+        </button>
+        <button onclick="filterRole('fin')" class="role-tab px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100">
+          เจ้าหน้าที่การเงิน (Finance)
+        </button>
+        <button onclick="filterRole('rev')" class="role-tab px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100">
+          คณะอนุกรรมการ (Reviewer)
+        </button>
+        <button onclick="filterRole('board')" class="role-tab px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100">
+          ผู้บริหาร / คกก.ส่งเสริมฯ
+        </button>
+      </div>
+
+      <!-- Styled Grid / Table -->
+      <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+        <div class="divide-y divide-slate-200 dark:divide-slate-800" id="role-cards-container">
+          
+          <!-- Role 1: PI -->
+          <div class="role-card p-5 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors" data-role="pi">
+            <div class="flex flex-col md:flex-row md:items-start gap-4">
+              <div class="md:w-64 flex-shrink-0">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 mb-2">
+                  นักวิจัย (Principal Investigator)
+                </span>
+                <p class="text-xs text-slate-500 dark:text-slate-400">ผู้ยื่นขอรับทุนวิจัย และแก้ไขข้อเสนอโครงการ</p>
+              </div>
+              <div class="flex-1 space-y-2 text-xs md:text-sm text-slate-700 dark:text-slate-300">
+                <div class="flex items-start">
+                  <span class="font-mono text-xs font-bold text-slate-400 w-6 flex-shrink-0 mt-0.5">01.</span>
+                  <span>กรอกประวัติส่วนตัวและผลงาน (RS-01 ส่วน ข) ในระบบโปรไฟล์ครั้งเดียว เพื่อใช้ซ้ำได้กับทุกข้อเสนอทุน</span>
+                </div>
+                <div class="flex items-start">
+                  <span class="font-mono text-xs font-bold text-slate-400 w-6 flex-shrink-0 mt-0.5">02.</span>
+                  <span>เลือกประเภททุน และนำเข้าข้อความจากไฟล์ RS-01 (<code>.docx</code>) ลงแบบฟอร์มอัตโนมัติ</span>
+                </div>
+                <div class="flex items-start">
+                  <span class="font-mono text-xs font-bold text-slate-400 w-6 flex-shrink-0 mt-0.5">03.</span>
+                  <span>เสนองบประมาณผ่านไฟล์ Excel 17.2 (<code>.xlsx</code>) หรือ Web Form พร้อมระบบแจ้งเตือนตรวจเพดานงบประมาณสด</span>
+                </div>
+                <div class="flex items-start">
+                  <span class="font-mono text-xs font-bold text-slate-400 w-6 flex-shrink-0 mt-0.5">04.</span>
+                  <span>แก้ไขฟอร์มเฉพาะส่วนที่ได้รับอนุญาตให้แก้ไข (Field-Level Unlocked) เมื่อได้รับแจ้งส่งกลับแก้ไข (Revise Loop)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Role 2: Dean / Research Chair -->
+          <div class="role-card p-5 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors" data-role="dean">
+            <div class="flex flex-col md:flex-row md:items-start gap-4">
+              <div class="md:w-64 flex-shrink-0">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 mb-2">
+                  ประธานวิจัย / คณบดี
+                </span>
+                <p class="text-xs text-slate-500 dark:text-slate-400">กลั่นกรองและรับรองในระดับสำนักวิชา</p>
+              </div>
+              <div class="flex-1 space-y-2 text-xs md:text-sm text-slate-700 dark:text-slate-300">
+                <div class="flex items-start">
+                  <span class="font-mono text-xs font-bold text-slate-400 w-6 flex-shrink-0 mt-0.5">01.</span>
+                  <span>ตรวจสอบรายละเอียดข้อเสนอโครงการของนักวิจัยสังกัดสำนักวิชาตนเอง</span>
+                </div>
+                <div class="flex items-start">
+                  <span class="font-mono text-xs font-bold text-slate-400 w-6 flex-shrink-0 mt-0.5">02.</span>
+                  <span>กดทำรายการ <strong>“รับรอง (Endorse)”</strong> เพื่อส่งต่อส่วนกลาง หรือ <strong>“ส่งกลับแก้ไข (Return)”</strong> พร้อมระบุข้อคิดเห็น</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Role 3: Secretary -->
+          <div class="role-card p-5 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors" data-role="sec">
+            <div class="flex flex-col md:flex-row md:items-start gap-4">
+              <div class="md:w-64 flex-shrink-0">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 mb-2">
+                  เลขาสำนักวิชา
+                </span>
+                <p class="text-xs text-slate-500 dark:text-slate-400">ติดตามสถานะและประสานงาน (Read-Only)</p>
+              </div>
+              <div class="flex-1 space-y-2 text-xs md:text-sm text-slate-700 dark:text-slate-300">
+                <div class="flex items-start">
+                  <span class="font-mono text-xs font-bold text-slate-400 w-6 flex-shrink-0 mt-0.5">01.</span>
+                  <span>เข้าดูแดชบอร์ดภาพรวมเพื่อติดตามสถานะความคืบหน้า เอกสาร และคอมเมนต์ของนักวิจัยในสำนักวิชาตนเองแบบ Read-Only</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Role 4: Operations -->
+          <div class="role-card p-5 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors" data-role="ops">
+            <div class="flex flex-col md:flex-row md:items-start gap-4">
+              <div class="md:w-64 flex-shrink-0">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 mb-2">
+                  เจ้าหน้าที่ส่วนวิจัย (Operations)
+                </span>
+                <p class="text-xs text-slate-500 dark:text-slate-400">ผู้ดูแลระบบ บริหารรอบทุน และประสานงาน</p>
+              </div>
+              <div class="flex-1 space-y-2 text-xs md:text-sm text-slate-700 dark:text-slate-300">
+                <div class="flex items-start">
+                  <span class="font-mono text-xs font-bold text-slate-400 w-6 flex-shrink-0 mt-0.5">01.</span>
+                  <span>ประกาศเปิด/ปิดรอบทุน และตั้งค่าเพดานงบประมาณตามประเภททุน</span>
+                </div>
+                <div class="flex items-start">
+                  <span class="font-mono text-xs font-bold text-slate-400 w-6 flex-shrink-0 mt-0.5">02.</span>
+                  <span>ตรวจความครบถ้วนของเอกสาร (Screening) และมอบหมายคณะอนุกรรมการพิจารณาเนื้อหา</span>
+                </div>
+                <div class="flex items-start">
+                  <span class="font-mono text-xs font-bold text-slate-400 w-6 flex-shrink-0 mt-0.5">03.</span>
+                  <span>ทำหน้าที่ Admin Reassign เพื่อโอนย้ายคิวตรวจการเงินกรณีผู้ตรวจเดิมไม่สะดวกปฏิบัติงาน</span>
+                </div>
+                <div class="flex items-start">
+                  <span class="font-mono text-xs font-bold text-slate-400 w-6 flex-shrink-0 mt-0.5">04.</span>
+                  <span>สรุปโครงการเข้าวาระ คกก.ส่งเสริมฯ บันทึกมติ และสร้างร่างประกาศผลเพื่อเสนอลงนามผ่าน e-Office</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Role 5: Finance -->
+          <div class="role-card p-5 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors" data-role="fin">
+            <div class="flex flex-col md:flex-row md:items-start gap-4">
+              <div class="md:w-64 flex-shrink-0">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 mb-2">
+                  เจ้าหน้าที่การเงินส่วนวิจัย (Finance)
+                </span>
+                <p class="text-xs text-slate-500 dark:text-slate-400">ผู้ตรวจสอบความถูกต้องงบประมาณ</p>
+              </div>
+              <div class="flex-1 space-y-2 text-xs md:text-sm text-slate-700 dark:text-slate-300">
+                <div class="flex items-start">
+                  <span class="font-mono text-xs font-bold text-slate-400 w-6 flex-shrink-0 mt-0.5">01.</span>
+                  <span>กด <strong>“Claim”</strong> รับตรวจงบประมาณโครงการจากคิวกลางเพื่อผูกเป็นผู้ตรวจประจำโครงการ</span>
+                </div>
+                <div class="flex items-start">
+                  <span class="font-mono text-xs font-bold text-slate-400 w-6 flex-shrink-0 mt-0.5">02.</span>
+                  <span>ตรวจสอบตารางงบประมาณ 17.2 บันทึกข้อคิดเห็นการเงิน และกดรับรองแทร็กการเงิน</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Role 6: Reviewer -->
+          <div class="role-card p-5 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors" data-role="rev">
+            <div class="flex flex-col md:flex-row md:items-start gap-4">
+              <div class="md:w-64 flex-shrink-0">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300 mb-2">
+                  คณะอนุกรรมการพิจารณา
+                </span>
+                <p class="text-xs text-slate-500 dark:text-slate-400">ผู้ประเมินคุณภาพเชิงเนื้อหา</p>
+              </div>
+              <div class="flex-1 space-y-2 text-xs md:text-sm text-slate-700 dark:text-slate-300">
+                <div class="flex items-start">
+                  <span class="font-mono text-xs font-bold text-slate-400 w-6 flex-shrink-0 mt-0.5">01.</span>
+                  <span>ประเมินคุณภาพข้อเสนอเชิงคุณภาพ (Comment-Based) ในแทร็กเนื้อหา และให้คำวินิจฉัยโดยไม่มีการให้คะแนน Rubric</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Role 7: Executive / Committee -->
+          <div class="role-card p-5 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors" data-role="board">
+            <div class="flex flex-col md:flex-row md:items-start gap-4">
+              <div class="md:w-64 flex-shrink-0">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 mb-2">
+                  ผู้บริหาร / คกก.ส่งเสริมฯ
+                </span>
+                <p class="text-xs text-slate-500 dark:text-slate-400">ผู้อนุมัติจัดสรรทุนและออกประกาศ</p>
+              </div>
+              <div class="flex-1 space-y-2 text-xs md:text-sm text-slate-700 dark:text-slate-300">
+                <div class="flex items-start">
+                  <span class="font-mono text-xs font-bold text-slate-400 w-6 flex-shrink-0 mt-0.5">01.</span>
+                  <span>พิจารณาสรุปโครงการที่ผ่านการรับรองครบทั้ง 2 แทร็ก บันทึกมติจัดสรรทุน และลงนามประกาศผลผ่านระบบ e-Office</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: FUNCTIONAL REQUIREMENTS -->
+    <section id="requirements" class="mb-14 scroll-mt-6">
+      <div class="flex items-center space-x-3 mb-6 pb-2 border-b border-slate-200 dark:border-slate-800">
+        <div class="w-8 h-8 rounded-lg bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300 flex items-center justify-center font-bold text-sm">
+          03
+        </div>
+        <h2 class="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">สรุปฟังก์ชันหลักของระบบ (Functional Requirements Checklist)</h2>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="fr-grid">
+
+        <!-- FR-1 -->
+        <div class="fr-card bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm hover:border-brand-500 transition-all cursor-pointer" onclick="openFrModal('FR-1')">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-mono font-bold px-2 py-1 rounded bg-brand-100 text-brand-800 dark:bg-brand-950 dark:text-brand-300">
+              FR-1
+            </span>
+            <span class="text-xxs text-slate-400 uppercase tracking-wider font-semibold">Core Management</span>
+          </div>
+          <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-2">การเปิดรับสมัครทุน</h3>
+          <p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed">
+            เปิด/ปิดรอบสมัครตามวันเวลาที่กำหนด และควบคุมเพดานงบประมาณตามประเภททุน (Per-Tier: 100k / 200k / 300k)
+          </p>
+          <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-brand-600 dark:text-brand-400 font-medium">
+            <span>รายละเอียดเพิ่มเติม</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </div>
+        </div>
+
+        <!-- FR-2 -->
+        <div class="fr-card bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm hover:border-brand-500 transition-all cursor-pointer" onclick="openFrModal('FR-2')">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-mono font-bold px-2 py-1 rounded bg-brand-100 text-brand-800 dark:bg-brand-950 dark:text-brand-300">
+              FR-2
+            </span>
+            <span class="text-xxs text-slate-400 uppercase tracking-wider font-semibold">Profile & Import</span>
+          </div>
+          <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-2">โปรไฟล์นักวิจัย & การนำเข้าไฟล์</h3>
+          <p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed">
+            บันทึกประวัติครั้งเดียวใช้ซ้ำได้ตลอด, สกัดข้อความจากไฟล์ <code>.docx</code> ลงฟอร์มอัตโนมัติ พร้อมระบบ Graceful Fallback
+          </p>
+          <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-brand-600 dark:text-brand-400 font-medium">
+            <span>รายละเอียดเพิ่มเติม</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </div>
+        </div>
+
+        <!-- FR-3 -->
+        <div class="fr-card bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm hover:border-brand-500 transition-all cursor-pointer" onclick="openFrModal('FR-3')">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-mono font-bold px-2 py-1 rounded bg-brand-100 text-brand-800 dark:bg-brand-950 dark:text-brand-300">
+              FR-3
+            </span>
+            <span class="text-xxs text-slate-400 uppercase tracking-wider font-semibold">Budget Validation</span>
+          </div>
+          <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-2">การจัดการและตรวจกฎงบประมาณ</h3>
+          <p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed">
+            รองรับไฟล์ Excel 17.2 และ Web Form, ตรวจเพดานงบรวมตาม Tier และแจ้งเตือนทันทีเมื่อเดินทาง/ครุภัณฑ์ เกิน 25%
+          </p>
+          <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-brand-600 dark:text-brand-400 font-medium">
+            <span>รายละเอียดเพิ่มเติม</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </div>
+        </div>
+
+        <!-- FR-4 -->
+        <div class="fr-card bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm hover:border-brand-500 transition-all cursor-pointer" onclick="openFrModal('FR-4')">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-mono font-bold px-2 py-1 rounded bg-brand-100 text-brand-800 dark:bg-brand-950 dark:text-brand-300">
+              FR-4
+            </span>
+            <span class="text-xxs text-slate-400 uppercase tracking-wider font-semibold">School Approval</span>
+          </div>
+          <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-2">การรับรองระดับสำนักวิชา</h3>
+          <p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed">
+            ประธานวิจัย/คณบดี กด Endorse หรือ Return ในระบบ และเลขาสำนักวิชาเข้าติดตามสถานะได้ตลอดเวลาแบบ Read-Only
+          </p>
+          <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-brand-600 dark:text-brand-400 font-medium">
+            <span>รายละเอียดเพิ่มเติม</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </div>
+        </div>
+
+        <!-- FR-5 -->
+        <div class="fr-card bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm hover:border-brand-500 transition-all cursor-pointer" onclick="openFrModal('FR-5')">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-mono font-bold px-2 py-1 rounded bg-brand-100 text-brand-800 dark:bg-brand-950 dark:text-brand-300">
+              FR-5
+            </span>
+            <span class="text-xxs text-slate-400 uppercase tracking-wider font-semibold">Parallel Review</span>
+          </div>
+          <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-2">2-Track Review & Field Locking</h3>
+          <p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed">
+            แยกตรวจแทร็กเนื้อหาและแทร็กการเงิน, ล็อกฟิลด์ส่วนที่ผ่านแล้วเป็น Read-Only, Auto-Route ส่งเฉพาะแทร็กที่ไม่ผ่าน
+          </p>
+          <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-brand-600 dark:text-brand-400 font-medium">
+            <span>รายละเอียดเพิ่มเติม</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </div>
+        </div>
+
+        <!-- FR-6 -->
+        <div class="fr-card bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm hover:border-brand-500 transition-all cursor-pointer" onclick="openFrModal('FR-6')">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-mono font-bold px-2 py-1 rounded bg-brand-100 text-brand-800 dark:bg-brand-950 dark:text-brand-300">
+              FR-6
+            </span>
+            <span class="text-xxs text-slate-400 uppercase tracking-wider font-semibold">Resolution & Output</span>
+          </div>
+          <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-2">มติคณะกรรมการ & ประกาศผล</h3>
+          <p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed">
+            บันทึกมติจัดสรรทุน และสร้างเอกสารประกาศผลอัตโนมัติเพื่อเสนอลงนาม e-Office พร้อมส่งแจ้งเตือนแก่นักวิจัย
+          </p>
+          <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-brand-600 dark:text-brand-400 font-medium">
+            <span>รายละเอียดเพิ่มเติม</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 4: BUSINESS RULES & FIXES -->
+    <section id="business-rules" class="mb-14 scroll-mt-6">
+      <div class="flex items-center space-x-3 mb-6 pb-2 border-b border-slate-200 dark:border-slate-800">
+        <div class="w-8 h-8 rounded-lg bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300 flex items-center justify-center font-bold text-sm">
+          04
+        </div>
+        <h2 class="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">กฎทางธุรกิจและทางแก้จุดขัดแย้ง (Business Rules & Fixes)</h2>
+      </div>
+
+      <div class="space-y-4">
+        
+        <!-- Rule 1 -->
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+          <div class="flex items-start space-x-4">
+            <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center font-mono font-bold text-sm flex-shrink-0">
+              1
+            </div>
+            <div class="flex-1">
+              <h3 class="font-bold text-slate-900 dark:text-white text-base mb-1">Comment-Based Review 100%</h3>
+              <p class="text-xs md:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                ตัดระบบคะแนน Rubric 100 คะแนนออก ปรับมาใช้ระบบการให้ข้อคิดเห็น คอมเมนต์ และคำวินิจฉัยเชิงคุณภาพตามกระบวนการจริงของ มฟล. เพื่อลดความซ้ำซ้อนและสะท้อนการทำงานจริง
+              </p>
+              <div class="mt-3 flex items-center space-x-2 text-xs text-indigo-600 dark:text-indigo-400 font-mono">
+                <span class="px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-900">Logic Flag: NO_RUBRIC_SCORE</span>
+                <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400">Qualitative Feedback Only</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rule 2 -->
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+          <div class="flex items-start space-x-4">
+            <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center font-mono font-bold text-sm flex-shrink-0">
+              2
+            </div>
+            <div class="flex-1">
+              <h3 class="font-bold text-slate-900 dark:text-white text-base mb-1">Field-Level Locking</h3>
+              <p class="text-xs md:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                ในรอบการแก้ไข (Revise Loop) ฟอร์มฝั่งนักวิจัยจะถูกล็อกเป็น <code>Read-Only</code> เฉพาะในส่วนของแทร็กที่ได้รับการรับรองแล้ว เพื่อป้องกันไม่ให้นักวิจัยแก้ไขงบประมาณหรือเนื้อหาข้ามส่วนที่ผ่านการตรวจไปแล้วโดยไม่ได้รับอนุญาต
+              </p>
+              <div class="mt-3 flex items-center space-x-2 text-xs text-amber-600 dark:text-amber-400 font-mono">
+                <span class="px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-900">Security Rule: LOCK_PASSED_FIELDS</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rule 3 -->
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+          <div class="flex items-start space-x-4">
+            <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center font-mono font-bold text-sm flex-shrink-0">
+              3
+            </div>
+            <div class="flex-1">
+              <h3 class="font-bold text-slate-900 dark:text-white text-base mb-1">Auto-Routing Revise Loop</h3>
+              <p class="text-xs md:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                นักวิจัยไม่ต้องเลือกแทร็กส่งตรวจซ้ำเอง ระบบจะตรวจสอบสถานะเดิม และส่งฉบับแก้ไขไปให้ผู้ตรวจในแทร็กที่ไม่ผ่านโดยอัตโนมัติ (เช่น หากไม่ผ่านการเงิน ระบบจะส่งตรงถึงเจ้าหน้าที่การเงินคนเดิม)
+              </p>
+              <div class="mt-3 flex items-center space-x-2 text-xs text-emerald-600 dark:text-emerald-400 font-mono">
+                <span class="px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-900">Automation: AUTO_ROUTE_REJECTED_TRACK</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rule 4 -->
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+          <div class="flex items-start space-x-4">
+            <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center font-mono font-bold text-sm flex-shrink-0">
+              4
+            </div>
+            <div class="flex-1">
+              <h3 class="font-bold text-slate-900 dark:text-white text-base mb-1">Admin Reassign (Unclaim & Queue Transfer)</h3>
+              <p class="text-xs md:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                หากเจ้าหน้าที่การเงินที่กด Claim งานไว้ลาหยุดหรือโอนย้าย เจ้าหน้าที่ส่วนกลาง (Operations) สามารถกด Unclaim เพื่อปลดล็อกคิวงานคืนสู่คิวกลาง หรือโอนย้ายให้ผู้ตรวจคนอื่นได้ทันที เพื่อป้องกันคิวงานค้าง
+              </p>
+              <div class="mt-3 flex items-center space-x-2 text-xs text-blue-600 dark:text-blue-400 font-mono">
+                <span class="px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900">Admin Control: OVERRIDE_CLAIM_QUEUE</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 5: STATE MACHINE FLOW -->
+    <section id="state-machine" class="mb-14 scroll-mt-6">
+      <div class="flex items-center space-x-3 mb-6 pb-2 border-b border-slate-200 dark:border-slate-800">
+        <div class="w-8 h-8 rounded-lg bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300 flex items-center justify-center font-bold text-sm">
+          05
+        </div>
+        <h2 class="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">ลำดับการเปลี่ยนสถานะโครงการ (State Machine Flow)</h2>
+      </div>
+
+      <p class="text-sm text-slate-600 dark:text-slate-300 mb-6">
+        แผนภาพจำลอง State Machine ของระบบ RGMS Phase 1 ตั้งแต่เริ่มต้นยื่นข้อเสนอจนถึงประกาศผล (คลิกที่ Node เพื่อดูรายละเอียดแอคชัน):
+      </p>
+
+      <!-- Flow Container -->
+      <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm overflow-x-auto">
+        <div class="min-w-[700px] py-4">
+          
+          <!-- State Machine Horizontal Node Map -->
+          <div class="flex items-center justify-between relative">
+            <!-- Connecting Line -->
+            <div class="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-200 dark:bg-slate-800 -translate-y-1/2 z-0"></div>
+
+            <!-- Node 1: draft -->
+            <button onclick="selectState('draft')" class="state-node relative z-10 flex flex-col items-center group">
+              <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-2 border-slate-300 dark:border-slate-600 flex items-center justify-center font-mono text-xs font-bold group-hover:scale-110 transition-transform shadow-sm">
+                01
+              </div>
+              <span class="mt-2 text-xs font-mono font-bold text-slate-800 dark:text-slate-200">[draft]</span>
+              <span class="text-xxs text-slate-500">ยื่นข้อเสนอ</span>
+            </button>
+
+            <!-- Arrow -->
+            <svg class="w-4 h-4 text-slate-400 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+
+            <!-- Node 2: submitted -->
+            <button onclick="selectState('submitted')" class="state-node relative z-10 flex flex-col items-center group">
+              <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border-2 border-blue-300 dark:border-blue-700 flex items-center justify-center font-mono text-xs font-bold group-hover:scale-110 transition-transform shadow-sm">
+                02
+              </div>
+              <span class="mt-2 text-xs font-mono font-bold text-slate-800 dark:text-slate-200">[submitted]</span>
+              <span class="text-xxs text-slate-500">สำนักวิชาตรวจ</span>
+            </button>
+
+            <!-- Arrow -->
+            <svg class="w-4 h-4 text-slate-400 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+
+            <!-- Node 3: screening -->
+            <button onclick="selectState('screening')" class="state-node relative z-10 flex flex-col items-center group">
+              <div class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border-2 border-indigo-300 dark:border-indigo-700 flex items-center justify-center font-mono text-xs font-bold group-hover:scale-110 transition-transform shadow-sm">
+                03
+              </div>
+              <span class="mt-2 text-xs font-mono font-bold text-slate-800 dark:text-slate-200">[screening]</span>
+              <span class="text-xxs text-slate-500">ส่วนกลางตรวจ</span>
+            </button>
+
+            <!-- Arrow -->
+            <svg class="w-4 h-4 text-slate-400 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+
+            <!-- Node 4: under_review -->
+            <button onclick="selectState('under_review')" class="state-node relative z-10 flex flex-col items-center group">
+              <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border-2 border-purple-300 dark:border-purple-700 flex items-center justify-center font-mono text-xs font-bold group-hover:scale-110 transition-transform shadow-sm ring-4 ring-purple-50 dark:ring-purple-900/40">
+                04
+              </div>
+              <span class="mt-2 text-xs font-mono font-bold text-slate-800 dark:text-slate-200">[under_review]</span>
+              <span class="text-xxs text-slate-500">ตรวจ 2 แทร็ก</span>
+            </button>
+
+            <!-- Arrow -->
+            <svg class="w-4 h-4 text-slate-400 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+
+            <!-- Node 5: ready_for_committee -->
+            <button onclick="selectState('ready_for_committee')" class="state-node relative z-10 flex flex-col items-center group">
+              <div class="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border-2 border-amber-300 dark:border-amber-700 flex items-center justify-center font-mono text-xs font-bold group-hover:scale-110 transition-transform shadow-sm">
+                05
+              </div>
+              <span class="mt-2 text-xs font-mono font-bold text-slate-800 dark:text-slate-200">[ready_committee]</span>
+              <span class="text-xxs text-slate-500">รอเข้า คกก.</span>
+            </button>
+
+            <!-- Arrow -->
+            <svg class="w-4 h-4 text-slate-400 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+
+            <!-- Node 6: committee_resolved -->
+            <button onclick="selectState('committee_resolved')" class="state-node relative z-10 flex flex-col items-center group">
+              <div class="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border-2 border-emerald-300 dark:border-emerald-700 flex items-center justify-center font-mono text-xs font-bold group-hover:scale-110 transition-transform shadow-sm">
+                06
+              </div>
+              <span class="mt-2 text-xs font-mono font-bold text-slate-800 dark:text-slate-200">[resolved]</span>
+              <span class="text-xxs text-slate-500">มติอนุมัติ</span>
+            </button>
+
+            <!-- Arrow -->
+            <svg class="w-4 h-4 text-slate-400 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+
+            <!-- Node 7: announced -->
+            <button onclick="selectState('announced')" class="state-node relative z-10 flex flex-col items-center group">
+              <div class="w-10 h-10 rounded-full bg-emerald-600 text-white border-2 border-emerald-500 flex items-center justify-center font-mono text-xs font-bold group-hover:scale-110 transition-transform shadow-sm">
+                07
+              </div>
+              <span class="mt-2 text-xs font-mono font-bold text-slate-800 dark:text-slate-200">[announced]</span>
+              <span class="text-xxs text-slate-500">ประกาศผล</span>
+            </button>
+          </div>
+
+          <!-- Revise Loop Return Arrow Highlight -->
+          <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+            <span class="flex items-center">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500 mr-2"></span>
+              <strong>[returned_revision]:</strong> หากมีแทร็กใดไม่ผ่าน จะเปลี่ยนสถานะเพื่อให้ PI แก้ไขเฉพาะฟิลด์ที่ไม่ผ่าน แล้ว auto-route กลับมาที่ [under_review]
+            </span>
+            <span class="font-mono text-xxs bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">Revise Loop Active</span>
+          </div>
+
+        </div>
+
+        <!-- Interactive State Inspector Panel -->
+        <div id="state-inspector" class="mt-6 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60">
+          <div class="flex items-center justify-between mb-2">
+            <span id="inspector-code" class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-brand-100 text-brand-800 dark:bg-brand-950 dark:text-brand-300">
+              State: [draft]
+            </span>
+            <span id="inspector-actor" class="text-xs text-slate-500 font-medium">
+              ผู้รับผิดชอบ: นักวิจัย (PI)
+            </span>
+          </div>
+          <h4 id="inspector-title" class="font-bold text-slate-900 dark:text-white text-sm mb-1">
+            สร้างและยื่นข้อเสนอโครงการ
+          </h4>
+          <p id="inspector-desc" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+            นักวิจัยบันทึกข้อมูลข้อเสนอโครงการ กรอกงบประมาณ 17.2 และแนบเอกสาร RS-01 สถานะนี้ยังคงอยู่ในร่างของนักวิจัย สามารถแก้ไขข้อมูลได้ทั้งหมด
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="mt-20 pt-6 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div>
+        <p>© 2026 Mae Fah Luang University. Research Grant Management System (RGMS Phase 1).</p>
+      </div>
+      <div class="flex space-x-4">
+        <span>ข้อกำหนดระบบเวอร์ชัน 1.0</span>
+        <span>•</span>
+        <span>ส่วนบริหารการวิจัย มฟล.</span>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- FR DETAILS MODAL -->
+  <div id="fr-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl relative">
+      <button onclick="closeFrModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <div class="flex items-center space-x-2 mb-3">
+        <span id="modal-fr-id" class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-brand-100 text-brand-800 dark:bg-brand-950 dark:text-brand-300">FR-1</span>
+        <span class="text-xs text-slate-400">รายละเอียดฟังก์ชันหลัก</span>
+      </div>
+
+      <h3 id="modal-fr-title" class="text-lg font-bold text-slate-900 dark:text-white mb-2">ชื่อฟังก์ชัน</h3>
+      <p id="modal-fr-desc" class="text-xs md:text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-4">รายละเอียดเพิ่มเติม</p>
+
+      <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700/60 mb-4">
+        <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200 mb-1"> Acceptance Criteria Checklist:</h4>
+        <ul id="modal-fr-criteria" class="text-xs text-slate-600 dark:text-slate-300 space-y-1.5 list-disc list-inside">
+          <!-- Populated by JS -->
+        </ul>
+      </div>
+
+      <div class="flex justify-end">
+        <button onclick="closeFrModal()" class="px-4 py-2 text-xs font-semibold rounded-lg bg-slate-800 text-white dark:bg-brand-700 hover:bg-slate-900">
+          ปิดหน้าต่าง
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // Theme Toggle Logic
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const themeText = document.getElementById('theme-text');
+
+    function initTheme() {
+      if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        themeText.innerText = 'Light Mode';
+      } else {
+        document.documentElement.classList.remove('dark');
+        themeText.innerText = 'Dark Mode';
+      }
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+        themeText.innerText = 'Dark Mode';
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+        themeText.innerText = 'Light Mode';
+      }
+    });
+
+    initTheme();
+
+    // Mobile Sidebar Logic
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOpen = document.getElementById('sidebar-open');
+    const sidebarClose = document.getElementById('sidebar-close');
+
+    if (sidebarOpen && sidebarClose) {
+      sidebarOpen.addEventListener('click', () => {
+        sidebar.classList.remove('-translate-x-full');
+      });
+      sidebarClose.addEventListener('click', () => {
+        sidebar.classList.add('-translate-x-full');
+      });
+    }
+
+    // Role Tab Filtering
+    function filterRole(role) {
+      const cards = document.querySelectorAll('.role-card');
+      const tabs = document.querySelectorAll('.role-tab');
+
+      tabs.forEach(tab => {
+        tab.classList.remove('bg-brand-800', 'text-white', 'dark:bg-brand-600');
+        tab.classList.add('bg-white', 'dark:bg-slate-900', 'text-slate-700', 'dark:text-slate-300');
+      });
+
+      event.target.classList.add('bg-brand-800', 'text-white', 'dark:bg-brand-600');
+      event.target.classList.remove('bg-white', 'dark:bg-slate-900', 'text-slate-700', 'dark:text-slate-300');
+
+      cards.forEach(card => {
+        if (role === 'all' || card.getAttribute('data-role') === role) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // Search Filter Logic
+    const docSearch = document.getElementById('doc-search');
+    docSearch.addEventListener('input', (e) => {
+      const term = e.target.value.toLowerCase().trim();
+      
+      // Search FR Cards
+      const frCards = document.querySelectorAll('.fr-card');
+      frCards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+        if (text.includes(term)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Search Role Cards
+      const roleCards = document.querySelectorAll('.role-card');
+      roleCards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+        if (text.includes(term)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+
+    // FR Modal Content Data
+    const frData = {
+      'FR-1': {
+        title: 'การเปิดรับสมัครทุน & ตั้งค่ารอบทุน',
+        desc: 'ระบบช่วยให้เจ้าหน้าที่ Operations สามารถกำหนดระยะเวลาเปิด-ปิดรับสมัคร พร้อมกำหนดงบประมาณส่วนกลางและเพดานทุน Per-Tier (เช่น Tier 100k, 200k, 300k) ได้อย่างยืดหยุ่น',
+        criteria: [
+          'ควบคุมเวลาเปิด/ปิดตาม System Time ของเซิร์ฟเวอร์',
+          'จำกัดการยื่นขอเกินเพดานสูงสุดตาม Tier',
+          'รองรับการตั้งค่ารอบทุนย่อยและประกาศแนบท้าย'
+        ]
+      },
+      'FR-2': {
+        title: 'โปรไฟล์นักวิจัย & สกัดไฟล์ RS-01',
+        desc: 'ระบบสกัดข้อมูลอัตโนมัติจากไฟล์ .docx เพื่อความสะดวก พร้อมระบบสำรอง (Graceful Fallback) ในกรณีไฟล์ชำรุด',
+        criteria: [
+          'บันทึกประวัติผลงานในโปรไฟล์ส่วนตัวครั้งเดียว',
+          'ดึงข้อมูลบทความ/หัวข้อวิจัยจากไฟล์ .docx ลงฟอร์ม',
+          'ระบบ Graceful Fallback ให้กรอกมือได้หากไฟล์อ่านไม่ได้'
+        ]
+      },
+      'FR-3': {
+        title: 'ตรวจกฎงบประมาณสด (Budget Validation)',
+        desc: 'ระบบช่วยคำนวณและแจ้งเตือนทันทีเมื่อมีการกรอกงบหมวดเดินทางหรือครุภัณฑ์เกิน 25% ของงบรวม',
+        criteria: [
+          'รองรับตารางงบ Excel 17.2 และ Web Form',
+          'แจ้งเตือน Warning สดเมื่อหมวดเดินทาง > 25%',
+          'แจ้งเตือน Warning สดเมื่อหมวดครุภัณฑ์ > 25%'
+        ]
+      },
+      'FR-4': {
+        title: 'การรับรองระดับสำนักวิชา (School Endorsement)',
+        desc: 'กระบวนการกลั่นกรองขั้นแรกโดยประธานวิจัยสำนักวิชาและคณบดี พร้อมสิทธิ์การดูข้อมูลของเลขาสำนักวิชา',
+        criteria: [
+          'ปุ่ม Endorse เพื่อส่งต่อส่วนกลาง',
+          'ปุ่ม Return พร้อมช่องระบุข้อคิดเห็น/ข้อแก้ไข',
+          'แดชบอร์ด Read-Only สำหรับเลขาสำนักวิชา'
+        ]
+      },
+      'FR-5': {
+        title: '2-Track Parallel Review & Field Locking',
+        desc: 'ระบบแยกสายการตรวจออกเป็นแทร็กเนื้อหาและแทร็กการเงิน พร้อมระบบล็อกฟิลด์ส่วนที่ได้รับการอนุมัติแล้ว',
+        criteria: [
+          'แยกสายตรวจเนื้อหา (อนุกรรมการ) และการเงิน (เจ้าหน้าที่ Claim งาน)',
+          'ล็อกฟิลด์เป็น Read-Only ในส่วนที่ผ่านการรับรองแล้ว',
+          'Auto-Route ส่งเฉพาะแทร็กที่ไม่ผ่านไปให้ผู้ตรวจเดิม'
+        ]
+      },
+      'FR-6': {
+        title: 'มติคณะกรรมการ & ประกาศผลจัดสรรทุน',
+        desc: 'สรุปวาระ บันทึกมติจัดสรรทุน และสร้างร่างเอกสารประกาศผลอัตโนมัติเพื่อนำส่ง e-Office',
+        criteria: [
+          'บันทึกมติ คกก.ส่งเสริมฯ (อนุมัติ / ปรับลดงบ / ไม่อนุมัติ)',
+          'สร้างร่างเอกสารประกาศผล PDF อัตโนมัติ',
+          'ส่งการแจ้งเตือนผลจัดสรรทุนแก่นักวิจัย'
+        ]
+      }
+    };
+
+    function openFrModal(frId) {
+      const modal = document.getElementById('fr-modal');
+      const data = frData[frId];
+      if (!data) return;
+
+      document.getElementById('modal-fr-id').innerText = frId;
+      document.getElementById('modal-fr-title').innerText = data.title;
+      document.getElementById('modal-fr-desc').innerText = data.desc;
+
+      const criteriaList = document.getElementById('modal-fr-criteria');
+      criteriaList.innerHTML = data.criteria.map(c => `<li>${c}</li>`).join('');
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeFrModal() {
+      const modal = document.getElementById('fr-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // State Machine Inspector Data
+    const stateData = {
+      'draft': {
+        code: 'State: [draft]',
+        actor: 'นักวิจัย (PI)',
+        title: 'สร้างและยื่นข้อเสนอโครงการ',
+        desc: 'นักวิจัยบันทึกข้อมูลข้อเสนอโครงการ กรอกงบประมาณ 17.2 และแนบเอกสาร RS-01 สถานะนี้ยังคงอยู่ในร่างของนักวิจัย สามารถแก้ไขข้อมูลได้ทั้งหมด'
+      },
+      'submitted': {
+        code: 'State: [submitted]',
+        actor: 'ประธานวิจัยสำนักวิชา / คณบดี',
+        title: 'รอการรับรองระดับสำนักวิชา',
+        desc: 'ข้อเสนอโครงการถูกยื่นเข้ามาแล้ว ประธานวิจัยสำนักวิชาหรือคณบดีจะเข้าตรวจสอบความเหมาะสมเพื่อกด Endorse หรือ Return ส่งกลับแก้ไข'
+      },
+      'screening': {
+        code: 'State: [screening]',
+        actor: 'เจ้าหน้าที่ส่วนวิจัย (Operations)',
+        title: 'ตรวจสอบความครบถ้วนส่วนกลาง',
+        desc: 'เจ้าหน้าที่ส่วนกลางตรวจเอกสาร สลิปงบประมาณ และความถูกต้องตามเกณฑ์ ก่อนจัดส่งเข้าสู่กระบวนการตรวจ 2 แทร็กคู่ขนาน'
+      },
+      'under_review': {
+        code: 'State: [under_review]',
+        actor: 'อนุกรรมการ & เจ้าหน้าที่การเงิน',
+        title: 'การพิจารณา 2 แทร็กคู่ขนาน (Parallel Track Review)',
+        desc: 'ข้อเสนอถูกแยกตรวจ 2 สาย: แทร็กเนื้อหาประเมินโดยคณะอนุกรรมการ (Comment-Based) และแทร็กการเงินประเมินโดยเจ้าหน้าที่การเงินที่กด Claim งาน'
+      },
+      'ready_for_committee': {
+        code: 'State: [ready_for_committee]',
+        actor: 'เจ้าหน้าที่ส่วนวิจัย (Operations)',
+        title: 'ผ่านการรับรองครบทั้ง 2 แทร็ก พร้อมเข้า คกก.',
+        desc: 'ข้อเสนอผ่านการรับรองทั้งแทร็กเนื้อหาและแทร็กการเงินเรียบร้อยแล้ว เจ้าหน้าที่ส่วนกลางจะรวบรวมสรุปเพื่อนำเสนอต่อ คกก.ส่งเสริมฯ'
+      },
+      'committee_resolved': {
+        code: 'State: [committee_resolved]',
+        actor: 'ผู้บริหาร / คกก.ส่งเสริมฯ',
+        title: 'คกก.ส่งเสริมฯ ลงมติจัดสรรทุน',
+        desc: 'คณะกรรมการส่งเสริมฯ พิจารณาวาระ บันทึกมติการจัดสรรทุน (อนุมัติ/ปรับลดงบ) และเตรียมออกประกาศ'
+      },
+      'announced': {
+        code: 'State: [announced]',
+        actor: 'ระบบอัตโนมัติ / e-Office',
+        title: 'ออกประกาศผลจัดสรรทุน (สิ้นสุด Phase 1)',
+        desc: 'ร่างประกาศถูกนำส่งลงนามผ่าน e-Office และประกาศผลอย่างเป็นทางการในระบบ RGMS พร้อมส่งแจ้งเตือนแก่นักวิจัย เป็นอันสิ้นสุดกระบวนการ Phase 1'
+      }
+    };
+
+    function selectState(stateKey) {
+      const data = stateData[stateKey];
+      if (!data) return;
+
+      document.getElementById('inspector-code').innerText = data.code;
+      document.getElementById('inspector-actor').innerText = `ผู้รับผิดชอบ: ${data.actor}`;
+      document.getElementById('inspector-title').innerText = data.title;
+      document.getElementById('inspector-desc').innerText = data.desc;
+    }
+
+    // Scroll active link highlight
+    window.addEventListener('scroll', () => {
+      const sections = document.querySelectorAll('section');
+      const navLinks = document.querySelectorAll('.nav-link');
+      
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (pageYOffset >= sectionTop - 120) {
+          current = section.getAttribute('id');
+        }
+      });
+
+      navLinks.forEach(link => {
+        link.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'text-brand-700', 'dark:text-brand-400');
+        if (link.getAttribute('href') === `#${current}`) {
+          link.classList.add('bg-slate-100', 'dark:bg-slate-800', 'text-brand-700', 'dark:text-brand-400');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
